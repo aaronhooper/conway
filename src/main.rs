@@ -73,7 +73,7 @@ impl Game {
     }
 
     fn compute_next(&mut self) {
-        let mut next_grid = Grid::new(self.grid.width, self.grid.height);
+        let mut next_grid_state = self.grid.state.clone();
 
         for i in 0..(self.grid.height) {
             for j in 0..(self.grid.width) {
@@ -82,23 +82,39 @@ impl Game {
                     .filter(|p| self.grid.at(**p) == CellState::Alive)
                     .count();
 
-                println!("alive_neighbor_count: {}", alive_neighbor_count);
-                
-                match cell_state {
-                    CellState::Alive if alive_neighbor_count != 2 && alive_neighbor_count != 3 => {
-                        next_grid.state[i][j] = CellState::Dead;
-                        println!("alive cell at {:?} dying because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                    },
-                    CellState::Dead if alive_neighbor_count == 3 => {
-                        next_grid.state[i][j] = CellState::Alive;
-                        println!("dead cell at {:?} living because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                    },
-                    _ => (),
+                if i >= 22 {
+                    println!("alive_neighbor_count: {}", alive_neighbor_count);
                 }
+
+                if cell_state == CellState::Alive {
+                    if alive_neighbor_count < 2 || alive_neighbor_count > 3 {
+                        next_grid_state[i][j] = CellState::Dead;
+                        println!("alive cell at {:?} dying because alive neighbor count = {}", (j, i), alive_neighbor_count);
+                    }
+                } else {
+                    if alive_neighbor_count == 3 {
+                        next_grid_state[i][j] = CellState::Alive;
+                        println!("dead cell at {:?} living because alive neighbor count = {}", (j, i), alive_neighbor_count);
+                    }
+                }
+
+                //match cell_state {
+                //    CellState::Alive if alive_neighbor_count != 2 && alive_neighbor_count != 3 => {
+                //        next_grid.state[i][j] = CellState::Dead;
+                //        println!("alive cell at {:?} dying because alive neighbor count = {}", (j, i), alive_neighbor_count);
+                //    },
+                //    CellState::Dead if alive_neighbor_count == 3 => {
+                //        next_grid.state[i][j] = CellState::Alive;
+                //        println!("dead cell at {:?} living because alive neighbor count = {}", (j, i), alive_neighbor_count);
+                //    },
+                //    _ => (),
+                //}
             }
         }
 
-        self.grid = next_grid;
+        //let next_grid = next_grid;
+
+        self.grid.state = next_grid_state;
         self.generation += 1;
     }
 }
@@ -163,13 +179,14 @@ fn main() {
 
     //clear();
 
-    for _ in 0..1 {
-        print(&game.grid);
+    print(&game.grid);
+
+    for _ in 0..2 {
         println!("\n");
         game.compute_next();
+        print(&game.grid);
     }
 
-    print(&game.grid);
 
     //loop {
     //    clear();
