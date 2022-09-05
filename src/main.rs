@@ -82,37 +82,17 @@ impl Game {
                     .filter(|p| self.grid.at(**p) == CellState::Alive)
                     .count();
 
-                if i >= 22 {
-                    println!("alive_neighbor_count: {}", alive_neighbor_count);
-                }
-
-                if cell_state == CellState::Alive {
-                    if alive_neighbor_count < 2 || alive_neighbor_count > 3 {
+                match cell_state {
+                    CellState::Alive if alive_neighbor_count < 2 || alive_neighbor_count > 3 => {
                         next_grid_state[i][j] = CellState::Dead;
-                        println!("alive cell at {:?} dying because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                    }
-                } else {
-                    if alive_neighbor_count == 3 {
+                    },
+                    CellState::Dead if alive_neighbor_count == 3 => {
                         next_grid_state[i][j] = CellState::Alive;
-                        println!("dead cell at {:?} living because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                    }
+                    },
+                    _ => (),
                 }
-
-                //match cell_state {
-                //    CellState::Alive if alive_neighbor_count != 2 && alive_neighbor_count != 3 => {
-                //        next_grid.state[i][j] = CellState::Dead;
-                //        println!("alive cell at {:?} dying because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                //    },
-                //    CellState::Dead if alive_neighbor_count == 3 => {
-                //        next_grid.state[i][j] = CellState::Alive;
-                //        println!("dead cell at {:?} living because alive neighbor count = {}", (j, i), alive_neighbor_count);
-                //    },
-                //    _ => (),
-                //}
             }
         }
-
-        //let next_grid = next_grid;
 
         self.grid.state = next_grid_state;
         self.generation += 1;
@@ -158,41 +138,19 @@ fn main() {
     let height = 24;
     let mut game = Game::new(width, height);
 
-    game.grid.state[22][78] = CellState::Alive;
-    game.grid.state[23][78] = CellState::Alive;
-    game.grid.state[22][79] = CellState::Alive;
-    game.grid.state[23][79] = CellState::Alive;
-
-    //for i in 0..height {
-    //    for j in 0..width {
-    //        //let cell_num = width.pow(i as u32) + (j + 1);
-
-    //        //if cell_num % 5 == 0 || cell_num % 11 == 0 {
-    //        //    game.grid.state[i][j] = CellState::Alive;
-    //        //}
-
-    //        if i > 12 {
-    //            game.grid.state[i][j] = CellState::Alive;
-    //        }
-    //    }
-    //}
-
-    //clear();
-
-    print(&game.grid);
-
-    for _ in 0..2 {
-        println!("\n");
-        game.compute_next();
-        print(&game.grid);
+    for i in 0..height {
+        for j in 0..width {
+            if i > 12 {
+                game.grid.state[i][j] = CellState::Alive;
+            }
+        }
     }
 
-
-    //loop {
-    //    clear();
-    //    print(&game.grid);
-    //    println!("Generation #{}", game.generation);
-    //    sleep(1000);
-    //    game.compute_next();
-    //}
+    loop {
+        clear();
+        print(&game.grid);
+        println!("Generation #{}", game.generation);
+        sleep(10);
+        game.compute_next();
+    }
 }
