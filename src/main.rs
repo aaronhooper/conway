@@ -101,8 +101,8 @@ impl Game {
 
 fn symbol_for(cell: CellState) -> String {
     match cell {
-        CellState::Alive => String::from("#"),
-        CellState::Dead => String::from("."),
+        CellState::Alive => String::from("\u{25cf}"),
+        CellState::Dead => String::from(" "),
     }
 }
 
@@ -134,13 +134,13 @@ fn sleep(ms: u64) {
 }
 
 fn main() {
-    let width = 80;
-    let height = 24;
+    let width = 130;
+    let height = 30;
     let mut game = Game::new(width, height);
 
     for i in 0..height {
         for j in 0..width {
-            if i > 12 {
+            if (i > 12 || i < 3) && j > 40 {
                 game.grid.state[i][j] = CellState::Alive;
             }
         }
